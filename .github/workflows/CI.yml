@@ -23,20 +23,20 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       
-      - name: Send custom JSON data to Slack workflow
+      - name: Send Build Status to channel
         id: slack
         uses: slackapi/slack-github-action@v1.18.0
         with:
           # For posting a rich message using Block Kit
           payload: |
             {
-              "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+              "text": "Build result: ${{ job.status }}",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                    "text": "Build result: ${{ job.status }}"
                   }
                 }
               ]
@@ -46,13 +46,49 @@ jobs:
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
+      - name: Run Unit Tests
         if: ${{ github.event.client_payload.unit }}
         run: echo Run Unit Tests!
         
+      - name: Send Unit Status to channel
+        uses: slackapi/slack-github-action@v1.18.0
+        with:
+          # For posting a rich message using Block Kit
+          payload: |
+           if: ${{ github.event.client_payload.unit }} {
+            {
+              "text": "Unit Test result: ${{ job.status }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Unit Test result: ${{ job.status }}"
+                  }
+                }
+              ]
+            }
+            }
+            else 
+            {
+              "text": "Unit Test Skipped: ${{ job.status }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Unit Test Skipped: ${{ job.status }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Run Integration Test
         if: ${{ github.event.client_payload.integration }}
         run: |
           echo Run Integration,
