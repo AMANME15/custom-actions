@@ -22,54 +22,11 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      
-      - name: Send Build Status to channel
-        id: slack
-        uses: slackapi/slack-github-action@v1.18.0
-        with:
-          # For posting a rich message using Block Kit
-          payload: |
-            {
-              "text": "Build result: ${{ job.status }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Build result: ${{ job.status }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
       # Runs a single command using the runners shell
       - name: Run Unit Tests
         if: ${{ github.event.client_payload.unit }}
         run: echo Run Unit Tests!
-        
-      - name: Send Unit Status to channel
-        uses: slackapi/slack-github-action@v1.18.0
-        with:
-          # For posting a rich message using Block Kit
-          payload: |
-            {
-              "text": "Unit Test result:  ${{ github.event.client_payload.unit }} ? ${{ job.status }} : ${{ job.id }} ",
-              "blocks": [
-                { 
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Unit Test result:  ${{ github.event.client_payload.unit }} ? ${{ job.status }} : ${{ job.id }} ",
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         
 
       # Runs a set of commands using the runners shell
@@ -84,3 +41,25 @@ jobs:
         run: |
           echo ${{ github.event.client_payload.unit }},
           echo ${{ github.event.client_payload.integration }}
+          
+      - name: Send Build Status to channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.18.0
+        with:
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "text": "Build result: The CI workflow has completed with status ${{ job.status }}"
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Build result: The CI workflow has completed with status ${{ job.status }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK    
