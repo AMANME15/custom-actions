@@ -42,24 +42,24 @@ jobs:
           echo ${{ github.event.client_payload.unit }},
           echo ${{ github.event.client_payload.integration }}
           
-      - name: Send Build Status to channel
+      - name: Send Build Status
         id: slack
         uses: slackapi/slack-github-action@v1.18.0
         with:
-          # For posting a rich message using Block Kit
           payload: |
             {
-              "text": "Build result: The CI workflow has completed with status ${{ job.status }}"
+              "text": "GitHub Action build result: ${{ job.status }}",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "Build result: The CI workflow has completed with status ${{ job.status }}"
+                    "text": "GitHub Action build result: ${{ job.status }}"
                   }
                 }
               ]
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK    
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+  
