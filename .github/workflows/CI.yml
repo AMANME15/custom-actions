@@ -6,7 +6,7 @@ name: CI
 on:
   repository_dispatch:
     types:
-      - test
+      - CI
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
   
