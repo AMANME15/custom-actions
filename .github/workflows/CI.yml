@@ -54,8 +54,8 @@ jobs:
         uses: slackapi/slack-github-action@v1.18.0
         with:
           # For posting a rich message using Block Kit
+          if: ${{ github.event.client_payload.unit }} {
           payload: |
-           if: ${{ github.event.client_payload.unit }} {
             {
               "text": "Unit Test result: ${{ job.status }}",
               "blocks": [
@@ -70,6 +70,7 @@ jobs:
             }
             }
             else 
+            payload: |
             {
               "text": "Unit Test Skipped: ${{ job.status }}",
               "blocks": [
