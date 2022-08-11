@@ -22,6 +22,11 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+      
+      # Builds the code
+      - name: Run Build
+        if: ${{ github.event.client_payload.build }}
+        run: echo Run Build!
 
       # Runs a single command using the runners shell
       - name: Run Unit Tests
@@ -31,16 +36,16 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Run Integration Test
-        if: ${{ github.event.client_payload.integration }}
+        if: ${{ github.event.client_payload.deploy }}
         run: |
-          echo Run Integration,
-          echo tests, and deploy your project.
+          echo Run Deployment,
+          echo Deploy the project.
           
       # Runs client payload data
       - name: Print value of client payload
         run: |
           echo ${{ github.event.client_payload.unit }},
-          echo ${{ github.event.client_payload.integration }}
+          echo ${{ github.event.client_payload.deploy }}
           
       - name: Send Build Status
         id: slack
